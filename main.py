@@ -3,11 +3,6 @@ from models import Todo
 
 app = FastAPI()
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
 todos = []
 
 # Get all todos
@@ -18,20 +13,27 @@ async def get_todos():
 # Get a single todo
 @app.get("/todos/{todo_id}")
 async def get_todo(todo_id: int):
-    for item in todos:
-        if item.id == todo_id:
-            return {'todo': item}
-    return {'message' : 'No item found'}
+    for todo in todos:
+        if todo.id == todo_id:
+            return {'todo': todo}
+    return {'message' : 'No Todo found'}
 
 
 # Create a todo
 @app.post("/todos")
 async def create_todo(todo: Todo):
     todos.append(todo)
-    return {'message' : 'item added successfully'}
+    return {'message' : 'Todo added successfully'}
 
 
 # Update a todo
+@app.put('/todos/{todo_id}')
+async def update_todo(todo_id: int, new_item: Todo):
+    for todo in todos:
+        if todo.id == todo_id:
+            todo.item = new_item.item
+            return {"message" : "Todo updated successfully"}
+        return {'message': "No Todo found"}
 
 # Delete a todo
 @app.delete("/todos/{todo_id}")
@@ -40,4 +42,4 @@ async def delete_todo(todo_id: int):
         if item.id == todo_id:
             todos.remove(item)
             return {'message': 'item deleted successfully'}
-    return {'message' : 'No item found'}
+    return {'message' : 'No Todo found'}
